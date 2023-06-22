@@ -1,23 +1,12 @@
-import {
-  type LoaderArgs,
-  type V2_MetaFunction,
-  type LinksFunction,
-  json,
-} from '@remix-run/node'
-import { Form, useLoaderData } from '@remix-run/react'
+import { type LoaderArgs, json } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { getFullCast } from '~/helpers/getFullCast'
-import title from '~/helpers/title'
-import castCss from '~/styles/cast-pick.css'
 import defaultCharacterSet from '~/helpers/defaultCharacterSet'
 import { getShow } from '~/api/show'
-import { Checkbox, Footer } from './cast.$showId'
+import { CastForm } from './cast.$showId'
 import errors from '~/constants/castErrors'
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: castCss }]
-
-export const meta: V2_MetaFunction<typeof loader> = () => {
-  return [{ title: title('change characters') }]
-}
+export { links, meta } from './cast.$showId'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
@@ -47,46 +36,7 @@ export default function Cast() {
       {error && (errors as Record<string, string>)[error] && (
         <div className="error">{(errors as Record<string, string>)[error]}</div>
       )}
-      <div className="show">
-        {show.image?.original && (
-          <img src={show.image.original} alt={show.name} />
-        )}
-        <div>
-          <span>setting characters for:</span>
-          <h1>{show.name}</h1>
-        </div>
-      </div>
-      <Form method="post" action="/setcast" replace>
-        <div>
-          <fieldset>
-            <label>main cast</label>
-            <div className="checkboxGroup">
-              {cast.main.map((cast) => (
-                <Checkbox
-                  key={cast.character.id}
-                  character={cast.character}
-                  checked={selected.includes(cast.character.id)}
-                />
-              ))}
-            </div>
-          </fieldset>
-          {Object.keys(cast.seasons).map((season) => (
-            <fieldset key={season}>
-              <label>season {season}</label>
-              <div className="checkboxGroup">
-                {cast.seasons[Number(season)].map((cast) => (
-                  <Checkbox
-                    key={cast.character.id}
-                    character={cast.character}
-                    checked={selected.includes(cast.character.id)}
-                  />
-                ))}
-              </div>
-            </fieldset>
-          ))}
-        </div>
-        <Footer />
-      </Form>
+      <CastForm cast={cast} selected={selected} show={show} />
     </>
   )
 }

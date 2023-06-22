@@ -29,12 +29,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const showId = url.pathname.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
-    return redirect('/error/404')
+    throw new Error('404')
   }
   return json({ url: request.url, showId })
 }
 
-export function Checkbox({
+function Checkbox({
   character,
   checked,
   onChange,
@@ -58,21 +58,72 @@ export function Checkbox({
   )
 }
 
-export function Footer({
-  onClick,
+export function CastForm({
+  show,
+  cast,
+  selected,
+  onCheckboxChange,
+  onDoneClick,
 }: {
-  onClick?: (e: React.MouseEvent) => void
+  show: Show
+  cast: FullCast
+  selected: number[]
+  onCheckboxChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onDoneClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }) {
   return (
-    <footer>
-      <button type="submit" onClick={onClick}>
-        Done
-      </button>
-      <p>
-        Once you press <span>Done</span>, you can copy the link in your
-        browser's address bar to share this character set.
-      </p>
-    </footer>
+    <>
+      <div className="show">
+        {show.image?.original && (
+          <img src={show.image.original} alt={show.name} />
+        )}
+        <div>
+          <span>setting characters for:</span>
+          <h1>{show.name}</h1>
+        </div>
+      </div>
+      <Form method="post" action="/setcast" replace>
+        <div>
+          <fieldset>
+            <label>main cast</label>
+            <div className="checkboxGroup">
+              {cast.main.map((cast) => (
+                <Checkbox
+                  key={cast.character.id}
+                  character={cast.character}
+                  checked={selected.includes(cast.character.id)}
+                  onChange={onCheckboxChange}
+                />
+              ))}
+            </div>
+          </fieldset>
+          {Object.keys(cast.seasons).map((season) => (
+            <fieldset key={season}>
+              <label>season {season}</label>
+              <div className="checkboxGroup">
+                {cast.seasons[Number(season)].map((cast) => (
+                  <Checkbox
+                    key={cast.character.id}
+                    character={cast.character}
+                    checked={selected.includes(cast.character.id)}
+                    onChange={onCheckboxChange}
+                  />
+                ))}
+              </div>
+            </fieldset>
+          ))}
+        </div>
+        <footer>
+          <button type="submit" onClick={onDoneClick}>
+            Done
+          </button>
+          <p>
+            Once you press <span>Done</span>, you can copy the link in your
+            browser's address bar to share this character set.
+          </p>
+        </footer>
+      </Form>
+    </>
   )
 }
 
@@ -114,71 +165,36 @@ export default function Cast() {
     }
   }
 
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!selected) return
+    if (
+      selected.length < minCharacterCount ||
+      selected.length > maxCharacterCount
+    ) {
+      e.preventDefault()
+      if (selected.length < minCharacterCount) {
+        alert(
+          `${errors.toofew} You currently have ${selected.length} ${
+            selected.length === 1 ? 'character' : 'characters'
+          } selected.`
+        )
+      } else {
+        alert(
+          `${errors.toomany} You currently have ${selected.length} characters selected.`
+        )
+      }
+    }
+  }
+
   if (!(show && cast && selected)) return null
+
   return (
-    <>
-      <div className="show">
-        {show.image?.original && (
-          <img src={show.image.original} alt={show.name} />
-        )}
-        <div>
-          <span>setting characters for:</span>
-          <h1>{show.name}</h1>
-        </div>
-      </div>
-      <Form method="post" action="/setcast" replace>
-        <div>
-          <fieldset>
-            <label>main cast</label>
-            <div className="checkboxGroup">
-              {cast.main.map((cast) => (
-                <Checkbox
-                  key={cast.character.id}
-                  character={cast.character}
-                  checked={selected.includes(cast.character.id)}
-                  onChange={onChange}
-                />
-              ))}
-            </div>
-          </fieldset>
-          {Object.keys(cast.seasons).map((season) => (
-            <fieldset key={season}>
-              <label>season {season}</label>
-              <div className="checkboxGroup">
-                {cast.seasons[Number(season)].map((cast) => (
-                  <Checkbox
-                    key={cast.character.id}
-                    character={cast.character}
-                    checked={selected.includes(cast.character.id)}
-                    onChange={onChange}
-                  />
-                ))}
-              </div>
-            </fieldset>
-          ))}
-        </div>
-        <Footer
-          onClick={(e) => {
-            if (
-              selected.length < minCharacterCount ||
-              selected.length > maxCharacterCount
-            ) {
-              e.preventDefault()
-              if (selected.length < minCharacterCount) {
-                alert(
-                  `${errors.toofew} You currently have ${selected.length} ${
-                    selected.length === 1 ? 'character' : 'characters'
-                  } selected.`
-                )
-              } else {
-                alert(
-                  `${errors.toomany} You currently have ${selected.length} characters selected.`
-                )
-              }
-            }
-          }}
-        />
-      </Form>
-    </>
+    <CastForm
+      show={show}
+      cast={cast}
+      selected={selected}
+      onDoneClick={onClick}
+      onCheckboxChange={onChange}
+    />
   )
 }
