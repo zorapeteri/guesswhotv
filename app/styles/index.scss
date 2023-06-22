@@ -164,9 +164,9 @@ form {
   }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 580px) {
   :root {
-    --resultContainer-padding: 5vw;
+    --resultContainer-padding: 0px;
     --card-width: calc(45vw - (var(--gap) / 2));
     --card-height: calc(var(--card-width) * 1.48);
   }
