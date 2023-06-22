@@ -56,7 +56,7 @@ export default function Cast() {
           <h1>{show.name}</h1>
         </div>
       </div>
-      <Form method="post" action="/setcast">
+      <Form method="post" action="/setcast" replace>
         <div>
           <fieldset>
             <label>main cast</label>

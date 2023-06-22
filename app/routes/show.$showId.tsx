@@ -190,7 +190,7 @@ export default function Show() {
       <div aria-live="assertive">
         {choosingCharacterStep === 'hi' && (
           <div {...classname('hi', wiggleHi && 'wiggle')}>
-            <Link to={castPath} className="change">
+            <Link to={castPath} className="change" replace>
               change characters
             </Link>
             <span className="or">or</span>
