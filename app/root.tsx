@@ -65,6 +65,7 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body className="error">
+        <img className="logo" src="/images/logo.png" alt="Guess Who TV logo" />
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <img {...img} />
         <h1>{heading}</h1>
