@@ -173,6 +173,11 @@ footer {
   margin-bottom: 10px;
   color: colors.$darkBlue;
 
+  @media (orientation: portrait) {
+    position: absolute;
+    inset: auto 0 0;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
