@@ -33,6 +33,8 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: title(data?.show.name) }]
 }
 
+type ChoosingCharacterStep = 'hi' | 'choosing' | 'confirming' | null
+
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const showId = url.pathname.split('-').at(-1)
@@ -51,31 +53,37 @@ export const loader = async ({ request }: LoaderArgs) => {
         .map((id) => flatCast.find((cast) => cast.character.id === id))
         .filter(Boolean) as CastMember[])
     : defaultCharacterSet(cast)
+  const sParam = url.searchParams.get('s')
+  const ccsParam = url.searchParams.get('ccs')
+  const choosingCharacterStep: ChoosingCharacterStep =
+    (ccsParam as ChoosingCharacterStep) || (sParam ? null : 'hi')
   return json({
     crossedOut,
-    pathname: url.pathname,
     showId,
     characters,
     show,
+    choosingCharacterStep,
     href: url.href,
+    selected:
+      sParam && Number(sParam) <= characters.length ? Number(sParam) : null,
   })
 }
 
 export default function Show() {
   const {
     characters,
-    crossedOut: crossedOutFromRequest,
-    pathname,
+    crossedOut: crossedOutFromLoader,
+    choosingCharacterStep: choosingCharacterStepFromLoader,
+    selected: selectedFromLoader,
     showId,
     show,
     href,
   } = useLoaderData<typeof loader>()
-  const [crossedOut, setCrossedOut] = useState(crossedOutFromRequest)
+  const [crossedOut, setCrossedOut] = useState(crossedOutFromLoader)
   const hasJS = useHasJS()
-  const [selected, setSelected] = useState<number | null>(null)
-  const [choosingCharacterStep, setChoosingCharacterStep] = useState<
-    'hi' | 'choosing' | 'confirming' | null
-  >('hi')
+  const [selected, setSelected] = useState<number | null>(selectedFromLoader)
+  const [choosingCharacterStep, setChoosingCharacterStep] =
+    useState<ChoosingCharacterStep>(choosingCharacterStepFromLoader)
   const [wiggleHi, setWiggleHi] = useState(false)
 
   const castPath = href.replace('show', hasJS ? 'cast' : 'cast-ssr')
@@ -114,14 +122,40 @@ export default function Show() {
   }
 
   const getHref = (index: number) => {
+    const url = new URL(href)
+    if (choosingCharacterStep === 'choosing') {
+      url.searchParams.set('s', index.toString())
+      url.searchParams.set('ccs', 'confirming')
+      return url.href
+    }
+
+    if (choosingCharacterStep === 'confirming') {
+      if (index === selected) {
+        url.searchParams.delete('ccs')
+        return url.href
+      } else {
+        url.searchParams.set('s', index.toString())
+        return url.href
+      }
+    }
+
     if (crossedOut.includes(index)) {
       const filtered = crossedOut.filter((x) => x !== index)
-      if (!filtered.length) return pathname
-      return `${pathname}?co=${filtered.join(',')}`
+      if (!filtered.length) return url.href
+      url.searchParams.set('co', filtered.join(','))
+      return url.href
     }
-    return `${pathname}?co=${new Int8Array([...crossedOut, index])
-      .sort()
-      .join(',')}`
+    url.searchParams.set(
+      'co',
+      new Int8Array([...crossedOut, index]).sort().join(',')
+    )
+    return url.href
+  }
+
+  const getStartHref = () => {
+    const url = new URL(href)
+    url.searchParams.set('ccs', 'choosing')
+    return url.href
   }
 
   useEffect(() => {
@@ -135,7 +169,7 @@ export default function Show() {
       return
     }
     document.title = title(show.name)
-  }, [hasJS, crossedOutFromRequest, showId, show])
+  }, [hasJS, crossedOutFromLoader, showId, show])
 
   if (!characters?.length) {
     return (
@@ -156,12 +190,13 @@ export default function Show() {
               change characters
             </Link>
             <span className="or">or</span>
-            <button
+            <CardElement
               className="start"
               onClick={() => setChoosingCharacterStep('choosing')}
+              href={hasJS ? undefined : getStartHref()}
             >
               start playing
-            </button>
+            </CardElement>
           </div>
         )}
         {choosingCharacterStep === 'choosing' && (
@@ -180,7 +215,8 @@ export default function Show() {
         {...classname(
           'castResult',
           `items-${characters.length}`,
-          choosingCharacterStep && 'showInstruction'
+          choosingCharacterStep && 'showInstruction',
+          !hasJS && choosingCharacterStep === 'hi' && 'noJsHi'
         )}
         style={
           {

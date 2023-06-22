@@ -951,5 +951,8 @@
 .castResult.showInstruction {
   inset: var(--top-bar-height) 0 0;
 }
+.castResult.noJsHi {
+  pointer-events: none;
+}
 
 /*# sourceMappingURL=cast-grid.css.map */

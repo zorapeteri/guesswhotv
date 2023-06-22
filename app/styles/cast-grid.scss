@@ -102,4 +102,8 @@
   &.showInstruction {
     inset: var(--top-bar-height) 0 0;
   }
+
+  &.noJsHi {
+    pointer-events: none;
+  }
 }
