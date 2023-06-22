@@ -90,6 +90,7 @@ footer button {
   transition: all 0.2s linear;
   cursor: pointer;
   align-self: center;
+  margin: 1rem 0;
 }
 footer button:hover, footer button:focus-visible {
   background-color: #6666ff;
