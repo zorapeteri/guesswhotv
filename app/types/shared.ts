@@ -21,3 +21,7 @@ export type Network = {
 }
 
 export type ID = string | number
+
+export type WithStatus = {
+  status: number
+}

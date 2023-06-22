@@ -3,7 +3,6 @@ import {
   type V2_MetaFunction,
   type LinksFunction,
   json,
-  redirect,
 } from '@remix-run/node'
 import { Form, useLoaderData } from '@remix-run/react'
 import { getFullCast } from '~/helpers/getFullCast'
@@ -12,7 +11,7 @@ import castCss from '~/styles/cast-pick.css'
 import defaultCharacterSet from '~/helpers/defaultCharacterSet'
 import { getShow } from '~/api/show'
 import { Checkbox, Footer } from './cast.$showId'
-import errors from '~/constants/errors'
+import errors from '~/constants/castErrors'
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: castCss }]
 
@@ -24,7 +23,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const showId = url.pathname.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
-    return redirect('/404')
+    throw new Error('404')
   }
   const show = await getShow(showId)
   const cast = await getFullCast(showId)

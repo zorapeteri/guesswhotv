@@ -6,7 +6,7 @@ export async function action({ request }: ActionArgs) {
   const body = await request.formData()
   const referrer = request.headers.get('referer')
   if (!referrer) {
-    return redirect('/')
+    throw new Error('unknown')
   }
   const url = new URL(referrer)
   const characters = Object.keys(Object.fromEntries(body.entries()))

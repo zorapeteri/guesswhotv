@@ -17,7 +17,7 @@ import type { Show } from '~/types/show'
 import { useHasJS } from '~/helpers/useHasJS'
 import minCharacterCount from '~/constants/minCharacterCount'
 import maxCharacterCount from '~/constants/maxCharacterCount'
-import errors from '~/constants/errors'
+import errors from '~/constants/castErrors'
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: castCss }]
 
@@ -29,7 +29,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const showId = url.pathname.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
-    return redirect('/404')
+    return redirect('/error/404')
   }
   return json({ url: request.url, showId })
 }

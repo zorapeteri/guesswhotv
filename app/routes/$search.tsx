@@ -10,5 +10,9 @@ export const loader = async ({ request }: LoaderArgs) => {
       `/show/${[slug(shows[0].show.name), shows[0].show.id].join('-')}`
     )
   }
-  return redirect('/404')
+  return 1
+}
+
+export default function Search() {
+  throw new Error('404')
 }

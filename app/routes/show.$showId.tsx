@@ -22,6 +22,7 @@ import type { CastMember } from '~/types/cast'
 import { getShow } from '~/api/show'
 import { useHasJS } from '~/helpers/useHasJS'
 import { getCharacterImage } from '~/helpers/getCharacterImage'
+import minCharacterCount from '~/constants/minCharacterCount'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: showCss },
@@ -39,7 +40,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const showId = url.pathname.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
-    return redirect('/404')
+    throw new Error('404')
   }
   const crossedOut = url.searchParams.get('co')?.split(',').map(Number) || []
   const show = await getShow(showId)
@@ -53,6 +54,9 @@ export const loader = async ({ request }: LoaderArgs) => {
         .map((id) => flatCast.find((cast) => cast.character.id === id))
         .filter(Boolean) as CastMember[])
     : defaultCharacterSet(cast)
+  if (characters.length < minCharacterCount) {
+    throw new Error('too-few-characters')
+  }
   const sParam = url.searchParams.get('s')
   const ccsParam = url.searchParams.get('ccs')
   const choosingCharacterStep: ChoosingCharacterStep =
