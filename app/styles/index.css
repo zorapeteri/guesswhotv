@@ -131,7 +131,8 @@ form {
     padding-top: 0.8rem;
   }
 }
-.noResults {
+.noResults,
+.navigationLoading {
   display: grid;
   place-items: center;
   width: 100%;

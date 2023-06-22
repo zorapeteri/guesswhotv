@@ -6,14 +6,13 @@ import type {
   V2_MetaFunction,
 } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { useLoaderData, Form, Link } from '@remix-run/react'
+import { useLoaderData, Form, Link, useNavigation } from '@remix-run/react'
 import { searchShows } from '~/api/search'
 import slug from 'slug'
 import { debounce } from '~/helpers/debounce'
 import { classname } from '~/helpers/classname'
-import type { Show, ShowResult } from '~/types/show'
+import type { Show } from '~/types/show'
 import title from '~/helpers/title'
-import apiPath from '~/constants/apiPath'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesUrl },
@@ -47,9 +46,14 @@ export default function Index() {
   const formRef = useRef<HTMLFormElement>(null)
   const [query, setQuery] = useState(queryFromLoader || '')
   const [shows, setShows] = useState(showsFromLoader || [])
+  const [loading, setLoading] = useState(false)
+  const navigation = useNavigation()
 
   const searchShowsForQuery = useCallback((_query: string) => {
-    searchShows(_query).then((res) => setShows(res))
+    searchShows(_query).then((res) => {
+      setShows(res)
+      setLoading(false)
+    })
   }, [])
 
   const debouncedSearchShowsForQuery = useMemo(
@@ -61,11 +65,16 @@ export default function Index() {
     if (!query) {
       setShows([])
     } else {
+      if (!loading) setLoading(true)
       debouncedSearchShowsForQuery(query)
       window.history.replaceState(query, '', `${origin}?q=${query}`)
       document.title = title(`"${query}"`)
     }
-  }, [query, origin, debouncedSearchShowsForQuery])
+  }, [query, origin, debouncedSearchShowsForQuery, loading])
+
+  if (navigation.state === 'loading') {
+    return <span className="navigationLoading">Loading...</span>
+  }
 
   return (
     <div className="wrapper">
@@ -123,7 +132,7 @@ export default function Index() {
               <img src="/images/gameplay.png" alt="TODO" />
             </div>
           )}
-          {query && <span className="noResults">No results:/</span>}
+          {query && !loading && <span className="noResults">No results:/</span>}
         </>
       )}
     </div>
