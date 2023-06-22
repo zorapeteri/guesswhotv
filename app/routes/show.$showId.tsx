@@ -3,7 +3,7 @@ import type {
   LoaderArgs,
   V2_MetaFunction,
 } from '@remix-run/node'
-import { json, redirect } from '@remix-run/node'
+import { json } from '@remix-run/node'
 import { useLoaderData, Link } from '@remix-run/react'
 import { classname } from '~/helpers/classname'
 import castGrid from '~/styles/cast-grid.css'

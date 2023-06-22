@@ -62,20 +62,3 @@ export async function getFullCast(showId: ID): Promise<FullCast> {
   })
   return { main: mainCast, seasons }
 }
-
-export async function getFullCastTextList(showId: ID) {
-  const fullCast = await getFullCast(showId)
-  const lines = []
-  lines.push('main cast:')
-  fullCast.main.forEach((member) => {
-    lines.push(`  - ${member.character.name}`)
-  })
-
-  Object.keys(fullCast.seasons).forEach((season) => {
-    lines.push(`season ${season}:`)
-    fullCast.seasons[Number(season)].forEach((member) => {
-      lines.push(`  - ${member.character.name}`)
-    })
-  })
-  return lines.join('\n')
-}

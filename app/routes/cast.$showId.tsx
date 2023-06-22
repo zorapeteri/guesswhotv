@@ -4,7 +4,6 @@ import {
   type V2_MetaFunction,
   type LinksFunction,
   json,
-  redirect,
 } from '@remix-run/node'
 import { Form, useLoaderData } from '@remix-run/react'
 import { type FullCast, getFullCast } from '~/helpers/getFullCast'

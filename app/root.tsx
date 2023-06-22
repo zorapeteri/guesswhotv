@@ -54,7 +54,7 @@ export default function App() {
 
 export function ErrorBoundary() {
   const routeError = useRouteError() as Error
-  const error = errors[routeError.message] || errors.unknown
+  const error = (errors as any)[routeError.message] || errors.unknown
   const { img, heading, description } = error
   return (
     <html lang="en">
