@@ -13,6 +13,7 @@ import { debounce } from '~/helpers/debounce'
 import { classname } from '~/helpers/classname'
 import type { Show } from '~/types/show'
 import title from '~/helpers/title'
+import gameplayAlt from '~/constants/gameplayAlt'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesUrl },
@@ -128,13 +129,13 @@ export default function Index() {
         <>
           {!query && (
             <div className="hi">
-              <img id="logo" src="/images/logo.png" alt="GuessWhoTV logo" />
+              <img id="logo" src="/images/logo.png" alt="Guess Who TV logo" />
               <ol>
                 <li>Find a friend (or enemy) to play with</li>
                 <li>Pick a TV show</li>
                 <li>Play Guess Who!</li>
               </ol>
-              <img src="/images/gameplay.png" alt="TODO" />
+              <img src="/images/gameplay.png" alt={gameplayAlt} />
             </div>
           )}
           {query && !loading && <span className="noResults">No results:/</span>}
