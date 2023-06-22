@@ -9,7 +9,11 @@
 }
 
 body {
-  padding: 0 1rem 200px;
+  padding: 0 1rem;
+}
+
+.wrapper.query {
+  padding-bottom: 200px;
 }
 
 form {
@@ -160,6 +164,26 @@ form {
 
     @media (prefers-contrast: more) {
       opacity: 1;
+    }
+  }
+}
+
+footer {
+  text-align: center;
+  margin-bottom: 10px;
+  color: colors.$darkBlue;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+
+    @media (prefers-contrast: more) {
+      color: colors.$veryLightBlue;
     }
   }
 }

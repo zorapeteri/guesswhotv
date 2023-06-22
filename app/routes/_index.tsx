@@ -78,7 +78,7 @@ export default function Index() {
   }
 
   return (
-    <div className="wrapper">
+    <div {...classname('wrapper', query && 'query')}>
       <div className="searchInputContainer">
         <Form method="get" ref={formRef}>
           <input
@@ -141,6 +141,16 @@ export default function Index() {
           {query && !loading && <span className="noResults">No results:/</span>}
         </>
       )}
+      <footer>
+        made with ♡ by{' '}
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://github.com/zorapeteri"
+        >
+          zora
+        </a>
+      </footer>
     </div>
   )
 }
