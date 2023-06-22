@@ -164,6 +164,19 @@ form {
       filter: brightness(0.9);
     }
   }
+
+  ol {
+    margin: 3rem 1rem 0;
+    padding-left: 0;
+    opacity: 0.5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    @media (prefers-contrast: more) {
+      opacity: 1;
+    }
+  }
 }
 
 @media screen and (max-width: 500px) {

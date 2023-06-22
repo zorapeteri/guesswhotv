@@ -129,6 +129,11 @@ export default function Index() {
           {!query && (
             <div className="hi">
               <img id="logo" src="/images/logo.png" alt="GuessWhoTV logo" />
+              <ol>
+                <li>Find a friend (or enemy) to play with</li>
+                <li>Pick a TV show</li>
+                <li>Play Guess Who!</li>
+              </ol>
               <img src="/images/gameplay.png" alt="TODO" />
             </div>
           )}
