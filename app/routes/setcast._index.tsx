@@ -18,7 +18,7 @@ export async function action({ request }: ActionArgs) {
     url.searchParams.set('error', 'toomany')
     return redirect(url.href)
   }
-  url.href = url.href.replace('cast', 'show')
+  url.href = url.href.replace('cast-ssr', 'show').replace('cast', 'show')
   url.searchParams.set('cs', btoa(characters.join(',')))
   return redirect(url.href)
 }
