@@ -1,0 +1,174 @@
+@use 'colors';
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+:root {
+  --card-width: 237px;
+  --card-height: 351px;
+  --resultContainer-padding: 2rem;
+  --gap: 10px;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0 1rem 200px;
+  background-color: colors.$deepBlue;
+  color: colors.$white;
+}
+
+form {
+  width: 100%;
+  max-width: 400px;
+}
+
+.searchInputContainer {
+  height: 20vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchInputContainer input {
+  appearance: none;
+  border: 1px solid colors.$lightBlue;
+  outline: none;
+  color: colors.$white;
+  color: colors.$veryLightBlue;
+  padding: 0.6rem 1.1rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: transparent;
+  width: 100%;
+  transition: all 0.2s linear;
+
+  &::placeholder {
+    color: lighten(colors.$blue, 40%);
+    opacity: 0.2;
+    transition: all 0.2s linear;
+  }
+
+  &:focus,
+  &:focus-visible {
+    border-width: 2px;
+
+    &::placeholder {
+      opacity: 0.5;
+    }
+  }
+}
+
+.resultsContainer {
+  padding: 0 var(--resultContainer-padding);
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, var(--card-width));
+  grid-auto-rows: var(--card-height);
+  gap: var(--gap);
+  justify-content: center;
+}
+
+.resultCard {
+  position: relative;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  padding: 70% 10% 0;
+  color: transparent;
+  overflow: hidden;
+}
+
+.resultCard:before {
+  content: attr(data-name);
+  position: absolute;
+  top: 80%;
+  height: 20%;
+  color: colors.$white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0 0.8rem;
+  display: grid;
+  place-items: center;
+  overflow-wrap: break-word;
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  background-color: rgba(0, 0, 0, 0.8);
+  word-break: break-word;
+  width: 100%;
+}
+
+.resultCard.longName:before {
+  font-size: 0.9rem;
+}
+
+.resultCard.noImage:before {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding-top: 0.8rem;
+  inset: 0;
+  height: auto;
+  width: auto;
+}
+
+@media (hover: hover) {
+  .resultCard:before {
+    inset: 0;
+    height: auto;
+    width: auto;
+    padding: 0 0.8rem;
+    padding-top: var(--card-height);
+    background-color: transparent;
+    font-size: 1.5rem;
+  }
+
+  .resultCard:hover:before,
+  .resultCard:focus-visible:before {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding-top: 0.8rem;
+  }
+}
+
+.noResults {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.hi {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 100%;
+    max-width: 600px;
+
+    &#logo {
+      max-width: 500px;
+      filter: brightness(0.9);
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  :root {
+    --resultContainer-padding: 5vw;
+    --card-width: calc(45vw - (var(--gap) / 2));
+    --card-height: calc(var(--card-width) * 1.48);
+  }
+}

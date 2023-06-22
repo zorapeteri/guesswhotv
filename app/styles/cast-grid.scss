@@ -1,0 +1,105 @@
+@use 'sass:math';
+
+@function rows($items) {
+  @if $items >= 16 {
+    @return 4;
+  } @else if $items >= 12 {
+    @return 3;
+  } @else if $items >= 4 {
+    @return 2;
+  } @else {
+    @return 1;
+  }
+}
+
+@function portraitRows($items) {
+  @if $items == 18 or $items == 19 {
+    @return 6;
+  } @else if $items >= 20 or $items == 14 {
+    @return 5;
+  } @else if $items >= 11 {
+    @return 4;
+  } @else {
+    @return 3;
+  }
+}
+
+@mixin adjustLeftovers(
+  $columns: 0,
+  $start: 0,
+  $leftoverColumns: 0,
+  $leftoverCount: 0
+) {
+  @if $leftoverCount > 0 {
+    $leftoverWidth: 100% * ($columns / $leftoverColumns);
+    $leftoverMargin: $leftoverWidth - 100%;
+    $startRow: math.div(($start - 1), $columns) + 1;
+    @for $i from 0 through $leftoverCount - 1 {
+      & > *:nth-child(#{$start + $i}) {
+        width: $leftoverWidth;
+        margin-left: $leftoverMargin * ($i % $leftoverColumns);
+        grid-row: $startRow + math.floor(math.div($i, $leftoverColumns));
+      }
+    }
+  }
+}
+
+@mixin grid-template($items: 0, $portrait: false) {
+  $rows: if($portrait, portraitRows($items), rows($items));
+  $roundedColumns: math.round($items / $rows);
+  $leftover: if(
+    $items % $roundedColumns == 1,
+    $roundedColumns + 1,
+    $items % $roundedColumns
+  );
+  $columns: math.max($roundedColumns, $leftover);
+  $leftoverColumns: math.min($roundedColumns, $leftover);
+  $leftoverCount: if($columns == $leftover, $items - $leftover, $leftover);
+
+  @if $items < 6 and $portrait {
+    grid-template-columns: auto;
+    grid-template-rows: repeat(auto-fit, minmax(1px, 1fr));
+  } @else if $items < 4 {
+    grid-template-rows: auto;
+    grid-template-columns: repeat(auto-fit, minmax(1px, 1fr));
+  } @else {
+    grid-template-rows: repeat($rows, minmax(1px, 1fr));
+    grid-template-columns: repeat($columns, minmax(1px, 1fr));
+    @include adjustLeftovers(
+      $columns,
+      $items - $leftoverCount + 1,
+      $leftoverColumns,
+      $leftoverCount
+    );
+  }
+}
+
+@mixin grid-templates($portrait: false) {
+  @for $i from 1 through 24 {
+    &.items-#{$i} {
+      @include grid-template($i, $portrait);
+    }
+  }
+}
+
+.castResult {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  transition: all 0.5s linear;
+  transition-delay: 0.5s;
+  z-index: 2;
+  background-color: black;
+
+  @media (orientation: landscape) {
+    @include grid-templates();
+  }
+
+  @media (orientation: portrait) {
+    @include grid-templates($portrait: true);
+  }
+
+  &.showInstruction {
+    inset: var(--top-bar-height) 0 0;
+  }
+}

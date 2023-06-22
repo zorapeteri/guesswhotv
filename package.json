@@ -1,0 +1,41 @@
+{
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "remix build",
+    "dev": "concurrently \"npm run sass\" \"remix dev\"",
+    "start": "cross-env NODE_ENV=production netlify dev",
+    "typecheck": "tsc",
+    "sass": "sass --watch app/:app/"
+  },
+  "dependencies": {
+    "@netlify/functions": "^1.4.0",
+    "@remix-run/css-bundle": "^1.17.1",
+    "@remix-run/netlify": "^1.17.1",
+    "@remix-run/node": "^1.17.1",
+    "@remix-run/react": "^1.17.1",
+    "cross-env": "^7.0.3",
+    "isbot": "^3.6.8",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remix-utils": "^6.4.1",
+    "slug": "^8.2.2"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^1.17.1",
+    "@remix-run/eslint-config": "^1.17.1",
+    "@remix-run/serve": "^1.17.1",
+    "@types/lodash": "^4.14.195",
+    "@types/react": "^18.0.35",
+    "@types/react-dom": "^18.0.11",
+    "@types/slug": "^5.0.3",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.38.0",
+    "sass": "^1.63.4",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
