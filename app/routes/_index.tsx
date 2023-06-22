@@ -141,16 +141,18 @@ export default function Index() {
           {query && !loading && <span className="noResults">No results:/</span>}
         </>
       )}
-      <footer>
-        made with ♡ by{' '}
-        <a
-          target="_blank"
-          rel="noreferrer"
-          href="https://github.com/zorapeteri"
-        >
-          zora
-        </a>
-      </footer>
+      {!loading && (
+        <footer>
+          made with ♡ by{' '}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://github.com/zorapeteri"
+          >
+            zora
+          </a>
+        </footer>
+      )}
     </div>
   )
 }
