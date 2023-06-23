@@ -40,7 +40,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const showId = url.pathname.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
-    throw new Error('404')
+    throw new Response('404', { status: 404 })
   }
   const crossedOut = url.searchParams.get('co')?.split(',').map(Number) || []
   const show = await getShow(showId)
@@ -55,7 +55,7 @@ export const loader = async ({ request }: LoaderArgs) => {
         .filter(Boolean) as CastMember[])
     : defaultCharacterSet(cast)
   if (characters.length < minCharacterCount) {
-    throw new Error('too-few-characters')
+    throw new Response('too-few-characters', { status: 417 })
   }
   const sParam = url.searchParams.get('s')
   const ccsParam = url.searchParams.get('ccs')

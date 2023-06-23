@@ -3,6 +3,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "remix build",
+    "preview": "remix build && remix-serve .netlify/functions-internal/server.js",
     "dev": "concurrently \"npm run sass\" \"remix dev\"",
     "start": "cross-env NODE_ENV=production netlify dev",
     "typecheck": "tsc",

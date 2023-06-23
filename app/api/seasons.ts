@@ -7,7 +7,7 @@ export async function getSeasons(showId: ID): Promise<Season[]> {
     .then((res) => res.json())
     .then((res) => {
       if (res.status === 404) {
-        throw new Error('404')
+        throw new Response('404', { status: 404 })
       }
       return res
     })

@@ -9,6 +9,7 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteError,
+  isRouteErrorResponse,
 } from '@remix-run/react'
 import { BASE_TITLE } from './helpers/title'
 import errors from './constants/errors'
@@ -54,7 +55,10 @@ export default function App() {
 
 export function ErrorBoundary() {
   const routeError = useRouteError() as Error
-  const error = (errors as any)[routeError.message] || errors.unknown
+  const isRouteError = isRouteErrorResponse(routeError)
+  const error = isRouteError
+    ? (errors as any)[routeError.data] || errors.unknown
+    : errors.unknown
   const { img, heading, description } = error
   return (
     <html lang="en">

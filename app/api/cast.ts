@@ -9,7 +9,7 @@ export async function getCast(showId: ID): Promise<CastMember[]> {
     .then((res) => res.json())
     .then((res: CastMember[]) => {
       if ((res as any).status === 404) {
-        throw new Error('404')
+        throw new Response('404', { status: 404 })
       }
       return _.uniqBy(res, ({ character }) => character.name).filter(
         ({ character }) => !forbiddenCharacterNames.includes(character.name)

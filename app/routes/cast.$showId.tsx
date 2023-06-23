@@ -26,9 +26,12 @@ export const meta: V2_MetaFunction<typeof loader> = () => {
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
+  if (url.searchParams.get('e') === '417') {
+    throw new Response('too-few-characters', { status: 417 })
+  }
   const showId = url.pathname.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
-    throw new Error('404')
+    throw new Response('404', { status: 404 })
   }
   return json({ url: request.url, showId })
 }
@@ -134,20 +137,29 @@ export default function Cast() {
   const [selected, setSelected] = useState<number[] | null>(null)
 
   const fetchStuff = useCallback(async () => {
-    const url = new URL(urlFromLoader)
-    const _show = await getShow(showId)
-    const _cast = await getFullCast(showId)
-    let _selected =
-      url.searchParams.get('cs') &&
-      atob(url.searchParams.get('cs')!).split(',').map(Number)
-    if (!_selected) {
-      _selected = defaultCharacterSet(_cast).map(
-        (member) => member.character.id
-      )
+    try {
+      const url = new URL(urlFromLoader)
+      const _show = await getShow(showId)
+      const _cast = await getFullCast(showId)
+      let _selected =
+        url.searchParams.get('cs') &&
+        atob(url.searchParams.get('cs')!).split(',').map(Number)
+      if (!_selected) {
+        _selected = defaultCharacterSet(_cast).map(
+          (member) => member.character.id
+        )
+      }
+      if (_selected.length < minCharacterCount) {
+        url.searchParams.set('e', '417')
+        location.replace(url.href)
+        return
+      }
+      setShow(_show)
+      setCast(_cast)
+      setSelected(_selected)
+    } catch (err) {
+      location.replace(`${location.pathname}-notfound${location.search}`)
     }
-    setShow(_show)
-    setCast(_cast)
-    setSelected(_selected)
   }, [showId, urlFromLoader])
 
   useEffect(() => {
