@@ -10,8 +10,7 @@ export const loader = async ({ request }: LoaderArgs) => {
       `/show/${[slug(shows[0].show.name), shows[0].show.id].join('-')}`
     )
   }
-  throw new Error('testing')
-  // throw new Response('404', { status: 404 })
+  throw new Response('404', { status: 404 })
 }
 
 export default function Search() {
