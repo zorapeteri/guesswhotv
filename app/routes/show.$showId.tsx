@@ -38,7 +38,7 @@ type ChoosingCharacterStep = 'hi' | 'choosing' | 'confirming' | null
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
-  const showId = url.pathname.split('-').at(-1)
+  const showId = url.pathname.split('/').at(-1)?.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
     throw new Response('404', { status: 404 })
   }
