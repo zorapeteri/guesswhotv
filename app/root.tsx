@@ -47,6 +47,11 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
+        <script
+          src="https://cdn.usefathom.com/script.js"
+          data-site="HUGBBRLT"
+          defer
+        ></script>
         <LiveReload />
       </body>
     </html>
