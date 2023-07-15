@@ -102,6 +102,10 @@ footer button {
 footer button:hover, footer button:focus-visible {
   background-color: #6666ff;
 }
+footer button[disabled] {
+  pointer-events: none;
+  background-color: #8080ff;
+}
 footer p {
   background-color: #3c4257;
   width: 100%;
@@ -158,6 +162,25 @@ footer p span {
   }
   input[type=checkbox] {
     transform: scale(2);
+  }
+}
+.loader {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2.5px solid white;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 

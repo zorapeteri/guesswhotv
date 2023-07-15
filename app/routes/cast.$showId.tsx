@@ -66,12 +66,14 @@ export function CastForm({
   selected,
   onCheckboxChange,
   onDoneClick,
+  loading,
 }: {
   show: Show
   cast: FullCast
   selected: number[]
   onCheckboxChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   onDoneClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  loading?: boolean
 }) {
   return (
     <>
@@ -116,8 +118,13 @@ export function CastForm({
           ))}
         </div>
         <footer>
-          <button type="submit" onClick={onDoneClick}>
-            Done
+          <button
+            type="submit"
+            onClick={onDoneClick}
+            disabled={loading}
+            title={loading ? 'Loading' : undefined}
+          >
+            {loading ? <span className="loader"></span> : 'Done'}
           </button>
           <p>
             Once you press <span>Done</span>, you can copy the link in your
@@ -135,6 +142,7 @@ export default function Cast() {
   const [show, setShow] = useState<Show | null>(null)
   const [cast, setCast] = useState<FullCast | null>(null)
   const [selected, setSelected] = useState<number[] | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const fetchStuff = useCallback(async () => {
     try {
@@ -194,7 +202,10 @@ export default function Cast() {
           `${errors.toomany} You currently have ${selected.length} characters selected.`
         )
       }
+      return
     }
+    setLoading(true)
+    ;(e.target as any).form.submit()
   }
 
   if (!(show && cast && selected)) return null
@@ -206,6 +217,7 @@ export default function Cast() {
       selected={selected}
       onDoneClick={onClick}
       onCheckboxChange={onChange}
+      loading={loading}
     />
   )
 }

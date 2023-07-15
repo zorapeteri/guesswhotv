@@ -94,6 +94,11 @@ footer {
     &:focus-visible {
       background-color: colors.$lightBlue;
     }
+
+    &[disabled] {
+      pointer-events: none;
+      background-color: lighten(colors.$lightBlue, 5%);
+    }
   }
 
   p {
@@ -160,5 +165,25 @@ footer {
 
   input[type='checkbox'] {
     transform: scale(2);
+  }
+}
+
+.loader {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2.5px solid colors.$white;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
