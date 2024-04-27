@@ -144,7 +144,7 @@ export default function Index() {
       {!loading && (
         <footer>
           made with ♡ by{' '}
-          <a target="_blank" rel="noreferrer" href="https://zora.rocks">
+          <a target="_blank" rel="noreferrer" href="https://zora.pt">
             zora
           </a>
         </footer>
