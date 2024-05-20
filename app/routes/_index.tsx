@@ -85,6 +85,8 @@ export default function Index() {
             type="text"
             name="q"
             value={query}
+            // legit usecase for autofocus
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             spellCheck="false"
             placeholder="search TV shows"

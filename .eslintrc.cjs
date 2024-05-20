@@ -72,7 +72,6 @@ module.exports = {
       ],
       rules: {
         "react/no-unescaped-entities": "warn",
-        "jsx-a11y/no-autofocus": "warn",
         "jsx-a11y/label-has-associated-control": "warn",
       },
     },
