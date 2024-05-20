@@ -1,37 +1,37 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from "react"
 import {
-  type LoaderArgs,
-  type V2_MetaFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
   type LinksFunction,
   json,
-} from '@remix-run/node'
-import { Form, useLoaderData } from '@remix-run/react'
-import { type FullCast, getFullCast } from '~/helpers/getFullCast'
-import title from '~/helpers/title'
-import type { Character } from '~/types/cast'
-import castCss from '~/styles/cast-pick.css'
-import defaultCharacterSet from '~/helpers/defaultCharacterSet'
-import { getShow } from '~/api/show'
-import type { Show } from '~/types/show'
-import { useHasJS } from '~/helpers/useHasJS'
-import minCharacterCount from '~/constants/minCharacterCount'
-import maxCharacterCount from '~/constants/maxCharacterCount'
-import errors from '~/constants/castErrors'
+} from "@remix-run/node"
+import { Form, useLoaderData } from "@remix-run/react"
+import { type FullCast, getFullCast } from "~/helpers/getFullCast"
+import title from "~/helpers/title"
+import type { Character } from "~/types/cast"
+import castCss from "~/styles/cast-pick.scss?url"
+import defaultCharacterSet from "~/helpers/defaultCharacterSet"
+import { getShow } from "~/api/show"
+import type { Show } from "~/types/show"
+import { useHasJS } from "~/helpers/useHasJS"
+import minCharacterCount from "~/constants/minCharacterCount"
+import maxCharacterCount from "~/constants/maxCharacterCount"
+import errors from "~/constants/castErrors"
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: castCss }]
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: castCss }]
 
-export const meta: V2_MetaFunction<typeof loader> = () => {
-  return [{ title: title('change characters') }]
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: title("change characters") }]
 }
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
-  if (url.searchParams.get('e') === '417') {
-    throw new Response('too-few-characters', { status: 417 })
+  if (url.searchParams.get("e") === "417") {
+    throw new Response("too-few-characters", { status: 417 })
   }
-  const showId = url.pathname.split('-').at(-1)
+  const showId = url.pathname.split("-").at(-1)
   if (!showId || isNaN(Number(showId))) {
-    throw new Response('404', { status: 404 })
+    throw new Response("404", { status: 404 })
   }
   return json({ url: request.url, showId })
 }
@@ -122,9 +122,9 @@ export function CastForm({
             type="submit"
             onClick={onDoneClick}
             disabled={loading}
-            title={loading ? 'Loading' : undefined}
+            title={loading ? "Loading" : undefined}
           >
-            {loading ? <span className="loader"></span> : 'Done'}
+            {loading ? <span className="loader"></span> : "Done"}
           </button>
           <p>
             Once you press <span>Done</span>, you can copy the link in your
@@ -150,15 +150,15 @@ export default function Cast() {
       const _show = await getShow(showId)
       const _cast = await getFullCast(showId)
       let _selected =
-        url.searchParams.get('cs') &&
-        atob(url.searchParams.get('cs')!).split(',').map(Number)
+        url.searchParams.get("cs") &&
+        atob(url.searchParams.get("cs")!).split(",").map(Number)
       if (!_selected) {
         _selected = defaultCharacterSet(_cast).map(
           (member) => member.character.id
         )
       }
       if (_selected.length < minCharacterCount) {
-        url.searchParams.set('e', '417')
+        url.searchParams.set("e", "417")
         location.replace(url.href)
         return
       }
@@ -194,7 +194,7 @@ export default function Cast() {
       if (selected.length < minCharacterCount) {
         alert(
           `${errors.toofew} You currently have ${selected.length} ${
-            selected.length === 1 ? 'character' : 'characters'
+            selected.length === 1 ? "character" : "characters"
           } selected.`
         )
       } else {
@@ -205,7 +205,7 @@ export default function Cast() {
       return
     }
     setLoading(true)
-    ;(e.target as any).form.submit()
+    ;(e.target as HTMLButtonElement).form?.submit()
   }
 
   if (!(show && cast && selected)) return null

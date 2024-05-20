@@ -1,6 +1,6 @@
-@use 'colors';
-@use 'base';
-@use 'sass:color';
+@use "colors";
+@use "base";
+@use "sass:color";
 
 body {
   font-size: 1.2rem;
@@ -54,7 +54,7 @@ fieldset {
       cursor: pointer;
       width: fit-content;
 
-      input[type='checkbox'] {
+      input[type="checkbox"] {
         transform: scale(1.8);
       }
 
@@ -163,7 +163,7 @@ footer {
     padding: 0.2rem;
   }
 
-  input[type='checkbox'] {
+  input[type="checkbox"] {
     transform: scale(2);
   }
 }

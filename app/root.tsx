@@ -1,5 +1,4 @@
-import { cssBundleHref } from '@remix-run/css-bundle'
-import type { LinksFunction, V2_MetaFunction } from '@remix-run/node'
+import type { LinksFunction, MetaFunction } from "@remix-run/node"
 import {
   Link,
   Links,
@@ -10,27 +9,23 @@ import {
   ScrollRestoration,
   useRouteError,
   isRouteErrorResponse,
-} from '@remix-run/react'
-import { BASE_TITLE } from './helpers/title'
-import errors from './constants/errors'
-import errorCss from '~/styles/error.css'
+} from "@remix-run/react"
+import { BASE_TITLE } from "./helpers/title"
+import errors from "./constants/errors"
+import errorCss from "~/styles/error.scss?url"
 
 export const links: LinksFunction = () => [
-  ...(cssBundleHref
-    ? [{ rel: 'stylesheet', href: cssBundleHref }]
-    : [
-        {
-          rel: 'stylesheet',
-          href: errorCss,
-        },
-      ]),
+  {
+    rel: "stylesheet",
+    href: errorCss,
+  },
 ]
 
-export const meta: V2_MetaFunction = () => [
+export const meta: MetaFunction = () => [
   {
-    charset: 'utf-8',
+    charset: "utf-8",
     title: BASE_TITLE,
-    viewport: 'width=device-width, initial-scale=1',
+    viewport: "width=device-width, initial-scale=1",
   },
 ]
 
@@ -62,7 +57,7 @@ export function ErrorBoundary() {
   const routeError = useRouteError() as Error
   const isRouteError = isRouteErrorResponse(routeError)
   const error = isRouteError
-    ? (errors as any)[routeError.data] || errors.unknown
+    ? errors[routeError.data as keyof typeof errors] || errors.unknown
     : errors.unknown
   const { img, heading, description } = error
   return (

@@ -1,4 +1,4 @@
-@use 'colors';
+@use "colors";
 
 .characterCard {
   appearance: none;
@@ -39,7 +39,7 @@
     position: absolute;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    background-image: url('/images/cross.svg');
+    background-image: url("/images/cross.svg");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
@@ -58,7 +58,7 @@
 
   &.noImage {
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
       background-color: rgba(0, 0, 0, 0.3);

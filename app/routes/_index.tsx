@@ -1,32 +1,32 @@
-import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react'
-import stylesUrl from '~/styles/index.css'
+import { useRef, useState, useEffect, useCallback, useMemo } from "react"
+import stylesUrl from "~/styles/index.scss?url"
 import type {
   LinksFunction,
-  LoaderArgs,
-  V2_MetaFunction,
-} from '@remix-run/node'
-import { json } from '@remix-run/node'
-import { useLoaderData, Form, Link, useNavigation } from '@remix-run/react'
-import { searchShows } from '~/api/search'
-import slug from 'slug'
-import { debounce } from '~/helpers/debounce'
-import { classname } from '~/helpers/classname'
-import type { Show } from '~/types/show'
-import title from '~/helpers/title'
-import gameplayAlt from '~/constants/gameplayAlt'
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node"
+import { json } from "@remix-run/node"
+import { useLoaderData, Form, Link, useNavigation } from "@remix-run/react"
+import { searchShows } from "~/api/search"
+import slug from "slug"
+import { debounce } from "~/helpers/debounce"
+import { classname } from "~/helpers/classname"
+import type { Show } from "~/types/show"
+import title from "~/helpers/title"
+import gameplayAlt from "~/constants/gameplayAlt"
 
 export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: stylesUrl },
+  { rel: "stylesheet", href: stylesUrl },
 ]
 
-export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: title(data?.query && `"${data?.query}"`) }]
 }
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
   const origin = url.origin
-  const query = url.searchParams.get('q')
+  const query = url.searchParams.get("q")
   return json({
     shows: query ? await searchShows(query) : null,
     query,
@@ -35,7 +35,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 const getHref = (show: Show) => {
-  return `/show/${[slug(show.name), show.id].join('-')}`
+  return `/show/${[slug(show.name), show.id].join("-")}`
 }
 
 export default function Index() {
@@ -45,7 +45,7 @@ export default function Index() {
     origin,
   } = useLoaderData<typeof loader>()
   const formRef = useRef<HTMLFormElement>(null)
-  const [query, setQuery] = useState(queryFromLoader || '')
+  const [query, setQuery] = useState(queryFromLoader || "")
   const [shows, setShows] = useState(showsFromLoader || [])
   const [loading, setLoading] = useState(false)
   const navigation = useNavigation()
@@ -68,17 +68,17 @@ export default function Index() {
     } else {
       if (!loading) setLoading(true)
       debouncedSearchShowsForQuery(query)
-      window.history.replaceState(query, '', `${origin}?q=${query}`)
+      window.history.replaceState(query, "", `${origin}?q=${query}`)
       document.title = title(`"${query}"`)
     }
   }, [query, origin, debouncedSearchShowsForQuery, loading])
 
-  if (navigation.state === 'loading') {
+  if (navigation.state === "loading") {
     return <span className="navigationLoading">Loading...</span>
   }
 
   return (
-    <div {...classname('wrapper', query && 'query')}>
+    <div {...classname("wrapper", query && "query")}>
       <div className="searchInputContainer">
         <Form method="get" ref={formRef}>
           <input
@@ -110,9 +110,9 @@ export default function Index() {
                 <Link
                   key={show.id}
                   {...classname(
-                    'resultCard',
-                    !img && 'noImage',
-                    show.name.length > 24 && 'longName'
+                    "resultCard",
+                    !img && "noImage",
+                    show.name.length > 24 && "longName"
                   )}
                   to={getHref(show)}
                   style={{
@@ -143,7 +143,7 @@ export default function Index() {
       )}
       {!loading && (
         <footer>
-          made with ♡ by{' '}
+          made with ♡ by{" "}
           <a target="_blank" rel="noreferrer" href="https://zora.pt">
             zora
           </a>

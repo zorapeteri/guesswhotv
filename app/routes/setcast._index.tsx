@@ -1,8 +1,8 @@
-import { type ActionArgs, redirect } from '@remix-run/node'
+import { type ActionFunctionArgs, redirect } from '@remix-run/node'
 import maxCharacterCount from '~/constants/maxCharacterCount'
 import minCharacterCount from '~/constants/minCharacterCount'
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const body = await request.formData()
   const referrer = request.headers.get('referer')
   if (!referrer) {

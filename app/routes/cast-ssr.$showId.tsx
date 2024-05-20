@@ -1,4 +1,4 @@
-import { type LoaderArgs, json } from '@remix-run/node'
+import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { getFullCast } from '~/helpers/getFullCast'
 import defaultCharacterSet from '~/helpers/defaultCharacterSet'
@@ -9,7 +9,7 @@ import minCharacterCount from '~/constants/minCharacterCount'
 
 export { links, meta } from './cast.$showId'
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
   const showId = url.pathname.split('-').at(-1)
   if (!showId || isNaN(Number(showId))) {
