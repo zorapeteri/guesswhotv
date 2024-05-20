@@ -1,4 +1,4 @@
-import type { Country, Link, Image, Network } from './shared'
+import type { Link, Image, Network } from './shared'
 
 export type ShowResult = {
   score: number

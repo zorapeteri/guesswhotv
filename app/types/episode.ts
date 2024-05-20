@@ -1,5 +1,5 @@
-import { CastMember } from './cast'
-import type { Country, Image, Link } from './shared'
+import type { CastMember } from './cast'
+import type { Image } from './shared'
 
 export type Episode = {
   id: number
