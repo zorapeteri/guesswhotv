@@ -47,7 +47,6 @@ export default function App() {
           data-site="HUGBBRLT"
           defer
         ></script>
-        <LiveReload />
       </body>
     </html>
   )

@@ -1,6 +1,5 @@
-import type { CastMember } from '~/types/cast'
-import type { FullCast } from './getFullCast'
+import type { CastMember, Cast } from "~/types/cast"
 
-export function flattenCast(cast: FullCast): CastMember[] {
+export function flattenCast(cast: Cast): CastMember[] {
   return [...cast.main, ...Object.values(cast.seasons).flat()]
 }

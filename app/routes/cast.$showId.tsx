@@ -6,9 +6,9 @@ import {
   json,
 } from "@remix-run/node"
 import { Form, useLoaderData } from "@remix-run/react"
-import { type FullCast, getFullCast } from "~/helpers/getFullCast"
+import { getFullCast } from "~/helpers/getFullCast"
 import title from "~/helpers/title"
-import type { Character } from "~/types/cast"
+import type { Cast, Character } from "~/types/cast"
 import castCss from "~/styles/cast-pick.scss?url"
 import defaultCharacterSet from "~/helpers/defaultCharacterSet"
 import { getShow } from "~/api/show"
@@ -69,7 +69,7 @@ export function CastForm({
   loading,
 }: {
   show: Show
-  cast: FullCast
+  cast: Cast
   selected: number[]
   onCheckboxChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   onDoneClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -140,7 +140,7 @@ export default function Cast() {
   const { url: urlFromLoader, showId } = useLoaderData<typeof loader>()
   const hasJS = useHasJS()
   const [show, setShow] = useState<Show | null>(null)
-  const [cast, setCast] = useState<FullCast | null>(null)
+  const [cast, setCast] = useState<Cast | null>(null)
   const [selected, setSelected] = useState<number[] | null>(null)
   const [loading, setLoading] = useState(false)
 

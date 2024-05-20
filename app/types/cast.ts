@@ -1,4 +1,11 @@
-import type { Country, Image, Link } from './shared'
+import type { Country, Image, Link } from "./shared"
+
+export type Cast = {
+  main: CastMember[]
+  seasons: {
+    [number: string | number]: CastMember[]
+  }
+}
 
 export type CastMember = {
   person: Person

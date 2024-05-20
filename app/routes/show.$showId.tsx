@@ -15,14 +15,12 @@ import {
   clearUnwantedParams,
   hasUnwantedParams,
 } from "~/helpers/unwantedParams"
-import { getFullCast } from "~/helpers/getFullCast"
-import defaultCharacterSet from "~/helpers/defaultCharacterSet"
 import { flattenCast } from "~/helpers/flattenCast"
-import type { CastMember } from "~/types/cast"
 import { getShow } from "~/api/show"
 import { useHasJS } from "~/helpers/useHasJS"
 import { getCharacterImage } from "~/helpers/getCharacterImage"
-import minCharacterCount from "~/constants/minCharacterCount"
+import { getDefaultCast } from "~/helpers/getDefaultCast"
+import { getSpecificCast } from "~/helpers/getSpecificCast"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: showCss },
@@ -44,19 +42,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
   const crossedOut = url.searchParams.get("co")?.split(",").map(Number) || []
   const show = await getShow(showId)
-  const cast = await getFullCast(showId)
-  const flatCast = flattenCast(cast)
   const csParam = url.searchParams.get("cs")
-  const characters = csParam
-    ? (atob(csParam)
-        .split(",")
-        .map(Number)
-        .map((id) => flatCast.find((cast) => cast.character.id === id))
-        .filter(Boolean) as CastMember[])
-    : defaultCharacterSet(cast)
-  if (characters.length < minCharacterCount) {
-    throw new Response("too-few-characters", { status: 417 })
-  }
+  const specificCharacterIds = csParam
+    ? atob(csParam).split(",").map(Number)
+    : null
+  const cast =
+    specificCharacterIds !== null
+      ? await getSpecificCast(showId, specificCharacterIds)
+      : await getDefaultCast(showId)
+  const characters = flattenCast(cast)
   const sParam = url.searchParams.get("s")
   const ccsParam = url.searchParams.get("ccs")
   const choosingCharacterStep: ChoosingCharacterStep =
@@ -83,6 +77,7 @@ export default function Show() {
     show,
     href,
   } = useLoaderData<typeof loader>()
+
   const [crossedOut, setCrossedOut] = useState(crossedOutFromLoader)
   const hasJS = useHasJS()
   const [selected, setSelected] = useState<number | null>(selectedFromLoader)
