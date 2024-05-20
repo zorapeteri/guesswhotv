@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node"
 import { json } from "@remix-run/node"
-import { useLoaderData, Link } from "@remix-run/react"
+import { useLoaderData, Link, ClientLoaderFunction } from "@remix-run/react"
 import { classname } from "~/helpers/classname"
 import castGrid from "~/styles/cast-grid.scss?url"
 import characterCard from "~/styles/character-card.scss?url"
@@ -17,10 +17,12 @@ import {
 } from "~/helpers/unwantedParams"
 import { flattenCast } from "~/helpers/flattenCast"
 import { getShow } from "~/api/show"
-import { useHasJS } from "~/helpers/useHasJS"
 import { getCharacterImage } from "~/helpers/getCharacterImage"
 import { getDefaultCast } from "~/helpers/getDefaultCast"
 import { getSpecificCast } from "~/helpers/getSpecificCast"
+import canUseJS from "~/helpers/canUseJS"
+import { CastMember } from "~/types/cast"
+import { ExtractLoaderResponse } from "~/types/extractLoaderResponse"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: showCss },
@@ -29,10 +31,40 @@ export const links: LinksFunction = () => [
 ]
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return [{ title: title(data?.show.name) }]
+  return [{ title: title(data?.show?.name) }]
 }
 
 type ChoosingCharacterStep = "hi" | "choosing" | "confirming" | null
+
+async function loadShowAndCharacters({
+  showId,
+  characterIds,
+}: {
+  showId: string
+  characterIds: number[] | null
+}) {
+  const show = await getShow(showId)
+  const cast =
+    characterIds !== null
+      ? await getSpecificCast(showId, characterIds)
+      : await getDefaultCast(showId)
+  const characters = flattenCast(cast)
+
+  return { show, characters }
+}
+
+export const clientLoader: ClientLoaderFunction = async ({ serverLoader }) => {
+  const serverData = (await serverLoader()) as ExtractLoaderResponse<
+    typeof loader
+  >
+  const { showId, characterIds } = serverData
+  return {
+    ...serverData,
+    ...(await loadShowAndCharacters({ showId, characterIds })),
+  }
+}
+
+clientLoader.hydrate = true
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
@@ -40,17 +72,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (!showId || isNaN(Number(showId))) {
     throw new Response("404", { status: 404 })
   }
+
   const crossedOut = url.searchParams.get("co")?.split(",").map(Number) || []
-  const show = await getShow(showId)
   const csParam = url.searchParams.get("cs")
-  const specificCharacterIds = csParam
-    ? atob(csParam).split(",").map(Number)
-    : null
-  const cast =
-    specificCharacterIds !== null
-      ? await getSpecificCast(showId, specificCharacterIds)
-      : await getDefaultCast(showId)
-  const characters = flattenCast(cast)
+  const characterIds = csParam ? atob(csParam).split(",").map(Number) : null
+
+  const { show, characters } = canUseJS(url)
+    ? { show: null, characters: [] as CastMember[] }
+    : await loadShowAndCharacters({ showId, characterIds })
   const sParam = url.searchParams.get("s")
   const ccsParam = url.searchParams.get("ccs")
   const choosingCharacterStep: ChoosingCharacterStep =
@@ -58,6 +87,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({
     crossedOut,
     showId,
+    characterIds,
     characters,
     show,
     choosingCharacterStep,
@@ -79,13 +109,16 @@ export default function Show() {
   } = useLoaderData<typeof loader>()
 
   const [crossedOut, setCrossedOut] = useState(crossedOutFromLoader)
-  const hasJS = useHasJS()
+  const hasJS = canUseJS(new URL(href))
   const [selected, setSelected] = useState<number | null>(selectedFromLoader)
   const [choosingCharacterStep, setChoosingCharacterStep] =
     useState<ChoosingCharacterStep>(choosingCharacterStepFromLoader)
   const [wiggleHi, setWiggleHi] = useState(false)
 
-  const castPath = href.replace("show", hasJS ? "cast" : "cast-ssr")
+  const castPath = href.replace(
+    "show",
+    canUseJS(new URL(href)) ? "cast" : "cast-ssr"
+  )
 
   const toggleCross = (index: number) => {
     if (crossedOut.includes(index)) {
@@ -167,16 +200,8 @@ export default function Show() {
       )
       return
     }
-    document.title = title(show.name)
+    document.title = title(show?.name)
   }, [hasJS, crossedOutFromLoader, showId, show])
-
-  if (!characters?.length) {
-    return (
-      <span className="noCharacters">
-        Oops, looks like something went wrong here:/
-      </span>
-    )
-  }
 
   const CardElement = hasJS ? "button" : "a"
 
@@ -227,7 +252,7 @@ export default function Show() {
           const { character } = castMember
           const img = getCharacterImage(castMember)
           const isCrossedOut = crossedOut.includes(index)
-          const poster = show.image?.original
+          const poster = show?.image?.original
           return (
             <CardElement
               key={character.id}
