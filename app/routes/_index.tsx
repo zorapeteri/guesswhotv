@@ -66,12 +66,12 @@ export default function Index() {
     if (!query) {
       setShows([])
     } else {
-      if (!loading) setLoading(true)
+      setLoading(true)
       debouncedSearchShowsForQuery(query)
       window.history.replaceState(query, "", `${origin}?q=${query}`)
       document.title = title(`"${query}"`)
     }
-  }, [query, origin, debouncedSearchShowsForQuery, loading])
+  }, [query, origin, debouncedSearchShowsForQuery])
 
   if (navigation.state === "loading") {
     return <span className="navigationLoading">Loading...</span>
