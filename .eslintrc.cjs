@@ -71,7 +71,7 @@ module.exports = {
         "plugin:import/typescript",
       ],
       rules: {
-        "react/no-unescaped-entities": "warn",
+        "react/no-unescaped-entities": "off",
         "jsx-a11y/label-has-associated-control": "warn",
       },
     },
