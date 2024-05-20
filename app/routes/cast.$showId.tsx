@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useEffect, useState } from "react"
 import {
   type LoaderFunctionArgs,
   type MetaFunction,
   type LinksFunction,
   json,
 } from "@remix-run/node"
-import { Form, useLoaderData } from "@remix-run/react"
+import { ClientLoaderFunction, Form, useLoaderData } from "@remix-run/react"
 import { getFullCast } from "~/helpers/getFullCast"
 import title from "~/helpers/title"
 import type { Cast, Character } from "~/types/cast"
@@ -13,10 +13,11 @@ import castCss from "~/styles/cast-pick.scss?url"
 import defaultCharacterSet from "~/helpers/defaultCharacterSet"
 import { getShow } from "~/api/show"
 import type { Show } from "~/types/show"
-import { useHasJS } from "~/helpers/useHasJS"
 import minCharacterCount from "~/constants/minCharacterCount"
 import maxCharacterCount from "~/constants/maxCharacterCount"
 import errors from "~/constants/castErrors"
+import canUseJS from "~/helpers/canUseJS"
+import { ExtractLoaderResponse } from "~/types/extractLoaderResponse"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: castCss }]
 
@@ -24,16 +25,60 @@ export const meta: MetaFunction<typeof loader> = () => {
   return [{ title: title("change characters") }]
 }
 
+async function loadShowAndCast(showId: string) {
+  const show = await getShow(showId)
+  const cast = await getFullCast(showId)
+
+  return { show, cast }
+}
+
+export const clientLoader: ClientLoaderFunction = async ({ serverLoader }) => {
+  const serverData = (await serverLoader()) as ExtractLoaderResponse<
+    typeof loader
+  >
+  const { showId, selected } = serverData
+  const { show, cast } = await loadShowAndCast(showId)
+  return {
+    ...serverData,
+    cast,
+    show,
+    selected:
+      selected === null
+        ? defaultCharacterSet(cast).map((member) => member.character.id)
+        : selected,
+  }
+}
+
+clientLoader.hydrate = true
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
-  if (url.searchParams.get("e") === "417") {
-    throw new Response("too-few-characters", { status: 417 })
-  }
+
   const showId = url.pathname.split("-").at(-1)
   if (!showId || isNaN(Number(showId))) {
     throw new Response("404", { status: 404 })
   }
-  return json({ url: request.url, showId })
+
+  let selected =
+    (url.searchParams.get("cs") &&
+      atob(url.searchParams.get("cs")!).split(",").map(Number)) ||
+    null
+
+  const { show, cast } = canUseJS(url)
+    ? { show: null, cast: null }
+    : await loadShowAndCast(showId)
+
+  if (!selected && cast !== null) {
+    selected = defaultCharacterSet(cast).map((member) => member.character.id)
+  }
+
+  if (selected !== null && selected.length < minCharacterCount) {
+    throw new Response("too-few-characters", { status: 417 })
+  }
+
+  const error = url.searchParams.get("error")
+
+  return json({ url: request.url, showId, error, selected, show, cast })
 }
 
 function Checkbox({
@@ -137,43 +182,18 @@ export function CastForm({
 }
 
 export default function Cast() {
-  const { url: urlFromLoader, showId } = useLoaderData<typeof loader>()
-  const hasJS = useHasJS()
-  const [show, setShow] = useState<Show | null>(null)
-  const [cast, setCast] = useState<Cast | null>(null)
-  const [selected, setSelected] = useState<number[] | null>(null)
+  const {
+    error,
+    selected: selectedFromLoader,
+    show,
+    cast,
+  } = useLoaderData<typeof loader>()
+  const [selected, setSelected] = useState<number[] | null>(selectedFromLoader)
   const [loading, setLoading] = useState(false)
 
-  const fetchStuff = useCallback(async () => {
-    try {
-      const url = new URL(urlFromLoader)
-      const _show = await getShow(showId)
-      const _cast = await getFullCast(showId)
-      let _selected =
-        url.searchParams.get("cs") &&
-        atob(url.searchParams.get("cs")!).split(",").map(Number)
-      if (!_selected) {
-        _selected = defaultCharacterSet(_cast).map(
-          (member) => member.character.id
-        )
-      }
-      if (_selected.length < minCharacterCount) {
-        url.searchParams.set("e", "417")
-        location.replace(url.href)
-        return
-      }
-      setShow(_show)
-      setCast(_cast)
-      setSelected(_selected)
-    } catch (err) {
-      location.replace(`${location.pathname}-notfound${location.search}`)
-    }
-  }, [showId, urlFromLoader])
-
   useEffect(() => {
-    if (!hasJS) return
-    fetchStuff()
-  }, [hasJS, fetchStuff])
+    setSelected(selectedFromLoader)
+  }, [selectedFromLoader])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = Number(e.target.name)
@@ -211,13 +231,18 @@ export default function Cast() {
   if (!(show && cast && selected)) return null
 
   return (
-    <CastForm
-      show={show}
-      cast={cast}
-      selected={selected}
-      onDoneClick={onClick}
-      onCheckboxChange={onChange}
-      loading={loading}
-    />
+    <>
+      {error && (errors as Record<string, string>)[error] && (
+        <div className="error">{(errors as Record<string, string>)[error]}</div>
+      )}{" "}
+      <CastForm
+        show={show}
+        cast={cast}
+        selected={selected}
+        onDoneClick={onClick}
+        onCheckboxChange={onChange}
+        loading={loading}
+      />
+    </>
   )
 }
