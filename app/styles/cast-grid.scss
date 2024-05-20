@@ -31,7 +31,7 @@
   $leftoverCount: 0
 ) {
   @if $leftoverCount > 0 {
-    $leftoverWidth: 100% * ($columns / $leftoverColumns);
+    $leftoverWidth: 100% * calc($columns / $leftoverColumns);
     $leftoverMargin: $leftoverWidth - 100%;
     $startRow: math.div(($start - 1), $columns) + 1;
     @for $i from 0 through $leftoverCount - 1 {
@@ -46,7 +46,7 @@
 
 @mixin grid-template($items: 0, $portrait: false) {
   $rows: if($portrait, portraitRows($items), rows($items));
-  $roundedColumns: math.round($items / $rows);
+  $roundedColumns: math.round(calc($items / $rows));
   $leftover: if(
     $items % $roundedColumns == 1,
     $roundedColumns + 1,
