@@ -35,9 +35,9 @@ fieldset {
   background-color: darken(colors.$darkBlue, 25%);
   padding: 0;
 
-  & > label {
+  & > legend {
     appearance: none;
-    display: block;
+    width: 100%;
     background-color: darken(colors.$darkBlue, 10%);
     height: 60px;
     display: flex;

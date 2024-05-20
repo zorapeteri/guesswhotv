@@ -89,7 +89,7 @@ export function CastForm({
       <Form method="post" action="/setcast" replace>
         <div>
           <fieldset>
-            <label>main cast</label>
+            <legend>main cast</legend>
             <div className="checkboxGroup">
               {cast.main.map((cast) => (
                 <Checkbox
@@ -103,7 +103,7 @@ export function CastForm({
           </fieldset>
           {Object.keys(cast.seasons).map((season) => (
             <fieldset key={season}>
-              <label>season {season}</label>
+              <legend>season {season}</legend>
               <div className="checkboxGroup">
                 {cast.seasons[Number(season)].map((cast) => (
                   <Checkbox
