@@ -51,8 +51,11 @@ fieldset {
     flex-direction: column;
 
     div {
-      cursor: pointer;
       width: fit-content;
+
+      & > * {
+        cursor: pointer;
+      }
 
       input[type="checkbox"] {
         transform: scale(1.8);
