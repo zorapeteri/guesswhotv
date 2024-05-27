@@ -117,6 +117,10 @@ footer {
       pointer-events: none;
       background-color: lighten(colors.$lightBlue, 5%);
     }
+
+    &.characterLimitError {
+      background-color: darken(colors.$red, 25%);
+    }
   }
 
   p {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   type LoaderFunctionArgs,
   type MetaFunction,
@@ -19,6 +19,7 @@ import errors from "~/constants/castErrors"
 import canUseJS from "~/helpers/canUseJS"
 import { ExtractLoaderResponse } from "~/types/extractLoaderResponse"
 import { getCharacterImage } from "~/helpers/getCharacterImage"
+import { classname } from "~/helpers/classname"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: castCss }]
 
@@ -130,6 +131,26 @@ export function CastForm({
   onDoneClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
   loading?: boolean
 }) {
+  const buttonDisabled = useMemo(
+    () =>
+      loading ||
+      selected.length < minCharacterCount ||
+      selected.length >= maxCharacterCount,
+    [selected, loading]
+  )
+
+  const buttonTitle = useMemo(() => {
+    if (selected.length < minCharacterCount) {
+      return `${minCharacterCount - selected.length} too few characters`
+    }
+
+    if (selected.length >= maxCharacterCount) {
+      return `${selected.length - (maxCharacterCount - 1)} too many characters`
+    }
+
+    return "Done"
+  }, [selected])
+
   return (
     <>
       <div className="show">
@@ -178,10 +199,15 @@ export function CastForm({
           <button
             type="submit"
             onClick={onDoneClick}
-            disabled={loading}
-            title={loading ? "Loading" : undefined}
+            disabled={buttonDisabled}
+            title={loading ? "Loading" : buttonTitle}
+            {...classname(
+              (selected.length < minCharacterCount ||
+                selected.length >= maxCharacterCount) &&
+                "characterLimitError"
+            )}
           >
-            {loading ? <span className="loader"></span> : "Done"}
+            {loading ? <span className="loader"></span> : buttonTitle}
           </button>
           <p>
             Once you press <span>Done</span>, you can copy the link in your
@@ -218,24 +244,6 @@ export default function Cast() {
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!selected) return
-    if (
-      selected.length < minCharacterCount ||
-      selected.length > maxCharacterCount
-    ) {
-      e.preventDefault()
-      if (selected.length < minCharacterCount) {
-        alert(
-          `${errors.toofew} You currently have ${selected.length} ${
-            selected.length === 1 ? "character" : "characters"
-          } selected.`
-        )
-      } else {
-        alert(
-          `${errors.toomany} You currently have ${selected.length} characters selected.`
-        )
-      }
-      return
-    }
     setLoading(true)
     ;(e.target as HTMLButtonElement).form?.submit()
   }
