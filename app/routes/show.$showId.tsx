@@ -210,6 +210,10 @@ export default function Show() {
     }
   }, [characters])
 
+  if (show === null) {
+    return null
+  }
+
   const CardElement = hasJS ? "button" : "a"
 
   return (
