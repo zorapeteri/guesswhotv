@@ -23,6 +23,7 @@ import { getSpecificCast } from "~/helpers/getSpecificCast"
 import canUseJS from "~/helpers/canUseJS"
 import { CastMember } from "~/types/cast"
 import { ExtractLoaderResponse } from "~/types/extractLoaderResponse"
+import { detectFaces } from "~/helpers/faceDetection"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: showCss },
@@ -203,6 +204,12 @@ export default function Show() {
     document.title = title(show?.name)
   }, [hasJS, crossedOutFromLoader, showId, show])
 
+  useEffect(() => {
+    if (characters.length > 0) {
+      detectFaces(characters)
+    }
+  }, [characters])
+
   const CardElement = hasJS ? "button" : "a"
 
   return (
@@ -256,6 +263,7 @@ export default function Show() {
           return (
             <CardElement
               key={character.id}
+              id={character.id.toString()}
               {...classname(
                 "characterCard",
                 !img && "noImage",
