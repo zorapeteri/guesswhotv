@@ -1,8 +1,8 @@
+import { captureRemixErrorBoundaryError, withSentry } from "@sentry/remix"
 import type { LinksFunction, MetaFunction } from "@remix-run/node"
 import {
   Link,
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -29,7 +29,7 @@ export const meta: MetaFunction = () => [
   },
 ]
 
-export default function App() {
+function App() {
   return (
     <html lang="en">
       <head>
@@ -52,6 +52,8 @@ export default function App() {
   )
 }
 
+export default withSentry(App)
+
 export function ErrorBoundary() {
   const routeError = useRouteError() as Error
   const isRouteError = isRouteErrorResponse(routeError)
@@ -59,6 +61,7 @@ export function ErrorBoundary() {
     ? errors[routeError.data as keyof typeof errors] || errors.unknown
     : errors.unknown
   const { img, heading, description } = error
+  captureRemixErrorBoundaryError(error)
   return (
     <html lang="en">
       <head>

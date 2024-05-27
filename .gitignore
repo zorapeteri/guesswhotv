@@ -6,3 +6,5 @@ node_modules
 *.css
 *.css.map
 build
+.sentryclirc
+.env.sentry-build-plugin
