@@ -18,6 +18,7 @@ import maxCharacterCount from "~/constants/maxCharacterCount"
 import errors from "~/constants/castErrors"
 import canUseJS from "~/helpers/canUseJS"
 import { ExtractLoaderResponse } from "~/types/extractLoaderResponse"
+import { getCharacterImage } from "~/helpers/getCharacterImage"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: castCss }]
 
@@ -85,9 +86,11 @@ function Checkbox({
   character,
   checked,
   onChange,
+  hasImage,
 }: {
   character: Character
   checked: boolean
+  hasImage: boolean
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) {
   return (
@@ -101,6 +104,13 @@ function Checkbox({
         onChange={onChange}
       />
       <label htmlFor={character.id.toString()}>{character.name}</label>
+      {hasImage ? null : (
+        <img
+          src="/images/no-image.svg"
+          title="image missing for character"
+          alt="image missing for character"
+        />
+      )}
     </div>
   )
 }
@@ -140,6 +150,7 @@ export function CastForm({
                 <Checkbox
                   key={cast.character.id}
                   character={cast.character}
+                  hasImage={Boolean(getCharacterImage(cast))}
                   checked={selected.includes(cast.character.id)}
                   onChange={onCheckboxChange}
                 />
@@ -154,6 +165,7 @@ export function CastForm({
                   <Checkbox
                     key={cast.character.id}
                     character={cast.character}
+                    hasImage={Boolean(getCharacterImage(cast))}
                     checked={selected.includes(cast.character.id)}
                     onChange={onCheckboxChange}
                   />

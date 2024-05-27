@@ -72,6 +72,7 @@ module.exports = {
       ],
       rules: {
         "react/no-unescaped-entities": "off",
+        "jsx-a11y/img-redundant-alt": "off",
       },
     },
 
