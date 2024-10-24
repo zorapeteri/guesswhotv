@@ -43,10 +43,17 @@ function App() {
         <ScrollRestoration />
         <Scripts />
         <script
-          src="https://cdn.usefathom.com/script.js"
-          data-site="HUGBBRLT"
+          async
           defer
+          src="https://scripts.simpleanalyticscdn.com/latest.js"
         ></script>
+        <noscript>
+          <img
+            src="https://queue.simpleanalyticscdn.com/noscript.gif"
+            alt=""
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </noscript>
       </body>
     </html>
   )
