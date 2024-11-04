@@ -135,7 +135,7 @@ export function CastForm({
     () =>
       loading ||
       selected.length < minCharacterCount ||
-      selected.length >= maxCharacterCount,
+      selected.length > maxCharacterCount,
     [selected, loading]
   )
 
@@ -144,7 +144,7 @@ export function CastForm({
       return `${minCharacterCount - selected.length} too few characters`
     }
 
-    if (selected.length >= maxCharacterCount) {
+    if (selected.length > maxCharacterCount) {
       return `${selected.length - (maxCharacterCount - 1)} too many characters`
     }
 
@@ -203,7 +203,7 @@ export function CastForm({
             title={loading ? "Loading" : buttonTitle}
             {...classname(
               (selected.length < minCharacterCount ||
-                selected.length >= maxCharacterCount) &&
+                selected.length > maxCharacterCount) &&
                 "characterLimitError"
             )}
           >
