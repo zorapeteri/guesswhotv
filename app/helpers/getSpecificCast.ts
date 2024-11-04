@@ -17,7 +17,7 @@ export async function getSpecificCast(
 
   if (requiredMainCast.length === characterIds.length) {
     return {
-      main: mainCast,
+      main: requiredMainCast,
       seasons: {},
     }
   }
@@ -42,7 +42,7 @@ export async function getSpecificCast(
       characterIds.length
     ) {
       return {
-        main: mainCast,
+        main: requiredMainCast,
         seasons: _.groupBy(requiredGuestCast, (member) =>
           firstSeasonWithMember(episodes, member)
         ),
